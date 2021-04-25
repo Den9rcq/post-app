@@ -1,7 +1,7 @@
 import React from 'react';
 import PostListItem from '../post-list-item';
 
-const PostList = ({ posts }) => {
+const PostList = ({ posts, onDelete }) => {
 
     const elements = posts.map((item) => {
         const { id, ...itemProps } = item;
@@ -11,7 +11,9 @@ const PostList = ({ posts }) => {
                     label={item.label}
                     imortant={item.imortant} />         //^ Старый формат записи */}
 
-                <PostListItem {...itemProps} />       {/*//^ Новый формат с помощью разворота. Если ключи и значения названы одноименно  */}
+                <PostListItem
+                    {...itemProps}
+                    onDelete={() => onDelete(id)} />
             </li>
         )
     });
