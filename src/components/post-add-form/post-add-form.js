@@ -12,7 +12,7 @@ export default class PostAddForm extends Component {
         this.onSubmit = this.onSubmit.bind(this);
     }
 
-    // Отслеживаем что пользователь ввёл в input
+    // Записываем данные в state
     onValueChange(e) {
         this.setState({
             text: e.target.value
@@ -21,8 +21,11 @@ export default class PostAddForm extends Component {
 
     // Отправляем данные в body нового поста
     onSubmit(e) {
-        e.preventDefault();
-        this.props.onAdd(this.state.text)
+        e.preventDefault();                                     //^ Отменяем стандартное поведение браузера
+        this.props.onAdd(this.state.text)                       //^ Записваем значение в новый пост
+        this.setState({
+            text: ''                                            //^ Очищаем state (для очищения инпута)
+        })
     }
 
     render() {
@@ -34,7 +37,8 @@ export default class PostAddForm extends Component {
                     type="text"
                     placeholder="О чем вы думаете сейчас?"
                     className="form-control new-post-label"
-                    onChange={this.onValueChange}
+                    onChange={this.onValueChange}               //^ Отслеживаем что пользователь ввёл в input
+                    value={this.state.text}                     //^ Контролируеммый элемент (для очищение инпута, после отправки)
                 />
                 <button
                     type="submit"

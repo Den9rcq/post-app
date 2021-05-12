@@ -15,13 +15,15 @@ export default class App extends Component {
                 { label: "Going to learn React", important: true, like: false, id: 1 },
                 { label: "That is so good", important: false, like: false, id: 2 },
                 { label: "I need a break...", important: false, like: false, id: 3 }
-            ]
+            ],
+            term: ''
         };
 
         this.deleteItem = this.deleteItem.bind(this);
         this.addItem = this.addItem.bind(this);
         this.onToggleImportant = this.onToggleImportant.bind(this);
         this.onToggleLiked = this.onToggleLiked.bind(this);
+        this.onUpdateSearch = this.onUpdateSearch.bind(this);
 
         this.maxId = 4;
     }
@@ -85,10 +87,27 @@ export default class App extends Component {
         this.onToggleItem(id, 'like')
     }
 
+    // Возвращение массива с отфильтрованными постами
+    searchPost(items, term) {
+        if (term.length === 0) {
+            return items
+        }
+        return items.filter((item) => {
+            return item.label.indexOf(term) > -1
+        });
+    }
+
+    // Обновление state
+    onUpdateSearch(term) {
+        this.setState({ term })
+    }
+
     render() {
-        const { data } = this.state,
+        const { data, term } = this.state,
             liked = data.filter(item => item.like).length,                                  //^ Вытаскиваем количество элементов с like: true
             allPost = data.length;                                                          //^ Количество всех постов
+
+        const visiblePosts = this.searchPost(data, term);                                   //^ Видимые посты
 
         return (
             <div className="app">
@@ -96,11 +115,12 @@ export default class App extends Component {
                     liked={liked}
                     allPost={allPost} />
                 <div className="search-panel d-flex">
-                    <SearchPanel />
+                    <SearchPanel
+                        onUpdateSearch={this.onUpdateSearch} />
                     <PostStatusFilter />
                 </div>
                 <PostList
-                    posts={this.state.data}
+                    posts={visiblePosts}
                     onDelete={this.deleteItem}
                     onToggleImportant={this.onToggleImportant}
                     onToggleLiked={this.onToggleLiked} />
