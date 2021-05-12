@@ -16,7 +16,8 @@ export default class App extends Component {
                 { label: "That is so good", important: false, like: false, id: 2 },
                 { label: "I need a break...", important: false, like: false, id: 3 }
             ],
-            term: ''
+            term: '',
+            filter: 'all'
         };
 
         this.deleteItem = this.deleteItem.bind(this);
@@ -24,6 +25,7 @@ export default class App extends Component {
         this.onToggleImportant = this.onToggleImportant.bind(this);
         this.onToggleLiked = this.onToggleLiked.bind(this);
         this.onUpdateSearch = this.onUpdateSearch.bind(this);
+        this.onFilterSelect = this.onFilterSelect.bind(this);
 
         this.maxId = 4;
     }
@@ -87,27 +89,41 @@ export default class App extends Component {
         this.onToggleItem(id, 'like')
     }
 
-    // Возвращение массива с отфильтрованными постами
+    // Фильтр по строке поиска
     searchPost(items, term) {
         if (term.length === 0) {
             return items
         }
-        return items.filter((item) => {
+        return items.filter((item) => {                                                     //^ Возвращение массива с отфильтрованными объектами
             return item.label.indexOf(term) > -1
         });
     }
 
-    // Обновление state
+    // Обновление state.term
     onUpdateSearch(term) {
         this.setState({ term })
     }
 
+    // Фильтр по лайкам
+    filterPost(items, filter) {
+        if (filter === 'like') {
+            return items.filter(item => item.like)                                          //^ Возвращение массива с отфильтрованными объктами
+        } else {
+            return items
+        }
+    }
+
+    // Обновление state.filter
+    onFilterSelect(filter) {
+        this.setState({ filter })
+    }
+
     render() {
-        const { data, term } = this.state,
+        const { data, term, filter } = this.state,
             liked = data.filter(item => item.like).length,                                  //^ Вытаскиваем количество элементов с like: true
             allPost = data.length;                                                          //^ Количество всех постов
 
-        const visiblePosts = this.searchPost(data, term);                                   //^ Видимые посты
+        const visiblePosts = this.filterPost(this.searchPost(data, term), filter);          //^ Видимые посты
 
         return (
             <div className="app">
@@ -117,7 +133,9 @@ export default class App extends Component {
                 <div className="search-panel d-flex">
                     <SearchPanel
                         onUpdateSearch={this.onUpdateSearch} />
-                    <PostStatusFilter />
+                    <PostStatusFilter
+                        filter={filter}
+                        onFilterSelect={this.onFilterSelect} />
                 </div>
                 <PostList
                     posts={visiblePosts}
